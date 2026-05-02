@@ -42,9 +42,11 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(frontendPath));
 
   // SPA fallback — serve index.html for all non-API routes
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
       res.sendFile(path.join(frontendPath, 'index.html'));
+    } else {
+      next();
     }
   });
 }
