@@ -5,6 +5,6 @@
   "scripts": {
     "install": "cd backend && npm install && cd ../frontend && npm install",
     "build": "cd frontend && npm run build && cd ../backend && npx prisma generate",
-    "start": "cd backend && npx prisma migrate deploy && npm run start"
+    "start": "cd backend && npx prisma db push --accept-data-loss && npm run start"
   }
 }
