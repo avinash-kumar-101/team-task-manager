@@ -1,0 +1,378 @@
+
+<style>
+  :root { --indent: 20px; }
+  body { margin: 0; padding: 0; }
+  .root { padding: 16px 8px 24px; font-family: var(--font-mono); font-size: 13px; }
+  .tree { list-style: none; margin: 0; padding: 0; }
+  .tree li { margin: 0; padding: 0; position: relative; }
+
+  .entry { display: flex; align-items: center; gap: 6px; padding: 2px 6px; border-radius: 5px; cursor: pointer; transition: background .12s; user-select: none; }
+  .entry:hover { background: var(--color-background-secondary); }
+
+  .icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+  .label { color: var(--color-text-primary); font-weight: 400; }
+  .badge { font-size: 10px; padding: 1px 6px; border-radius: 10px; font-family: var(--font-sans); font-weight: 500; margin-left: 4px; flex-shrink: 0; }
+  .desc { font-size: 11px; color: var(--color-text-tertiary); font-family: var(--font-sans); margin-left: auto; padding-left: 12px; white-space: nowrap; }
+
+  .children { padding-left: var(--indent); display: block; border-left: 1.5px solid var(--color-border-tertiary); margin-left: 14px; }
+  .children.hidden { display: none; }
+
+  .toggle-icon { font-size: 10px; color: var(--color-text-tertiary); width: 10px; flex-shrink: 0; transition: transform .15s; }
+  .open > .entry .toggle-icon { transform: rotate(90deg); }
+
+  /* color bands */
+  .t-root   > .entry .label { color: var(--color-text-primary); font-weight: 500; }
+  .t-dir    > .entry .label { color: var(--color-text-info); }
+  .t-file   > .entry .label { color: var(--color-text-primary); }
+  .t-config > .entry .label { color: var(--color-text-warning); }
+  .t-env    > .entry .label { color: var(--color-text-danger); }
+
+  /* badges */
+  .b-p0    { background: var(--color-background-success); color: var(--color-text-success); }
+  .b-api   { background: var(--color-background-info);    color: var(--color-text-info); }
+  .b-db    { background: var(--color-background-warning);  color: var(--color-text-warning); }
+  .b-sec   { background: var(--color-background-danger);   color: var(--color-text-danger); }
+  .b-fe    { background: #EDE9FE; color: #5B21B6; }
+  .b-cfg   { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+
+  .section-label {
+    font-family: var(--font-sans); font-size: 10px; font-weight: 500;
+    color: var(--color-text-tertiary); text-transform: uppercase;
+    letter-spacing: .06em; padding: 10px 6px 3px;
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 6px 0; border-top: 1px solid var(--color-border-tertiary); margin-top: 12px; }
+  .litem { display: flex; align-items: center; gap: 4px; font-family: var(--font-sans); font-size: 11px; color: var(--color-text-secondary); }
+  .ldot { width: 8px; height: 8px; border-radius: 2px; }
+</style>
+
+<div class="root">
+
+<div class="section-label">Monorepo Root</div>
+
+<ul class="tree" id="tree">
+
+<li class="t-root open" id="r">
+  <div class="entry" onclick="tog('r')">
+    <span class="toggle-icon">▶</span>
+    <span class="icon">📁</span>
+    <span class="label">team-task-manager/</span>
+    <span class="badge b-cfg">monorepo</span>
+  </div>
+  <ul class="children" id="r-c">
+
+    <!-- ── BACKEND ── -->
+    <li class="t-dir open" id="be">
+      <div class="entry" onclick="tog('be')">
+        <span class="toggle-icon">▶</span>
+        <span class="icon">📁</span>
+        <span class="label">backend/</span>
+        <span class="badge b-api">Node · Express</span>
+      </div>
+      <ul class="children" id="be-c">
+
+        <li class="t-dir open" id="src">
+          <div class="entry" onclick="tog('src')">
+            <span class="toggle-icon">▶</span>
+            <span class="icon">📁</span>
+            <span class="label">src/</span>
+          </div>
+          <ul class="children" id="src-c">
+
+            <!-- controllers -->
+            <li class="t-dir open" id="ctrl">
+              <div class="entry" onclick="tog('ctrl')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">controllers/</span>
+                <span class="desc">Route handlers — thin, delegate to services</span>
+              </div>
+              <ul class="children" id="ctrl-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">authController.js</span><span class="desc">signup, login, getMe</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">projectController.js</span><span class="desc">CRUD + member management</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">taskController.js</span><span class="desc">CRUD + status patch</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">dashboardController.js</span><span class="desc">aggregate dashboard data</span></div></li>
+              </ul>
+            </li>
+
+            <!-- middleware -->
+            <li class="t-dir open" id="mw">
+              <div class="entry" onclick="tog('mw')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">middleware/</span>
+                <span class="badge b-sec">auth & RBAC</span>
+              </div>
+              <ul class="children" id="mw-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.js</span><span class="desc">verifyJWT → req.user</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">rbac.js</span><span class="desc">requireRole('admin' | 'member')</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">loadProjectMember.js</span><span class="desc">check membership + attach role</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">validate.js</span><span class="desc">Zod schema runner, 422 on fail</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">errorHandler.js</span><span class="desc">global error → JSON response</span></div></li>
+              </ul>
+            </li>
+
+            <!-- routes -->
+            <li class="t-dir open" id="rt">
+              <div class="entry" onclick="tog('rt')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">routes/</span>
+                <span class="desc">Express routers, wires middleware + controller</span>
+              </div>
+              <ul class="children" id="rt-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.routes.js</span><span class="desc">POST /signup  POST /login  GET /me</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">project.routes.js</span><span class="desc">CRUD /projects + /members</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">task.routes.js</span><span class="desc">CRUD /tasks + PATCH /status</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">dashboard.routes.js</span><span class="desc">GET /dashboard</span></div></li>
+              </ul>
+            </li>
+
+            <!-- services -->
+            <li class="t-dir open" id="svc">
+              <div class="entry" onclick="tog('svc')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">services/</span>
+                <span class="desc">Business logic — calls Prisma, returns data</span>
+              </div>
+              <ul class="children" id="svc-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.service.js</span><span class="desc">hash pw, compare, sign JWT</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">project.service.js</span><span class="desc">create/find/update/delete projects</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">task.service.js</span><span class="desc">task CRUD, overdue detection</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">dashboard.service.js</span><span class="desc">aggregate queries for dashboard</span></div></li>
+              </ul>
+            </li>
+
+            <!-- validators -->
+            <li class="t-dir" id="val">
+              <div class="entry" onclick="tog('val')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">validators/</span>
+                <span class="desc">Zod schemas — one per domain</span>
+              </div>
+              <ul class="children hidden" id="val-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.schema.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">project.schema.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">task.schema.js</span></div></li>
+              </ul>
+            </li>
+
+            <!-- utils -->
+            <li class="t-dir" id="ut">
+              <div class="entry" onclick="tog('ut')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">utils/</span>
+              </div>
+              <ul class="children hidden" id="ut-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">jwt.js</span><span class="desc">signToken, verifyToken helpers</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">AppError.js</span><span class="desc">custom error class with statusCode</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">catchAsync.js</span><span class="desc">wraps async controllers, forwards errors</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">app.js</span><span class="desc">Express app — mounts routers, global middleware</span></div></li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">server.js</span><span class="desc">HTTP listen — entry point for Railway</span></div></li>
+
+          </ul>
+        </li>
+
+        <!-- prisma -->
+        <li class="t-dir open" id="pr">
+          <div class="entry" onclick="tog('pr')">
+            <span class="toggle-icon">▶</span>
+            <span class="icon">📁</span>
+            <span class="label">prisma/</span>
+            <span class="badge b-db">ORM</span>
+          </div>
+          <ul class="children" id="pr-c">
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">schema.prisma</span><span class="desc">User, Project, ProjectMember, Task, Comment</span></div></li>
+            <li class="t-dir" id="mg">
+              <div class="entry" onclick="tog('mg')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">migrations/</span>
+                <span class="desc">auto-generated by prisma migrate dev</span>
+              </div>
+              <ul class="children hidden" id="mg-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">20240501_init/migration.sql</span></div></li>
+              </ul>
+            </li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">seed.js</span><span class="desc">demo Admin + Member accounts for testing</span></div></li>
+          </ul>
+        </li>
+
+        <!-- tests -->
+        <li class="t-dir" id="tst">
+          <div class="entry" onclick="tog('tst')">
+            <span class="toggle-icon">▶</span>
+            <span class="icon">📁</span>
+            <span class="label">tests/</span>
+            <span class="badge b-cfg">Jest + Supertest</span>
+          </div>
+          <ul class="children hidden" id="tst-c">
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.test.js</span><span class="desc">signup, login, 401 on bad token</span></div></li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">project.test.js</span><span class="desc">CRUD + RBAC 403 checks</span></div></li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">task.test.js</span><span class="desc">task lifecycle + overdue flag</span></div></li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">dashboard.test.js</span></div></li>
+          </ul>
+        </li>
+
+        <li class="t-env"><div class="entry"><span class="icon">🔒</span><span class="label">.env</span><span class="desc">DATABASE_URL, JWT_SECRET, PORT — never commit</span></div></li>
+        <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">.env.example</span><span class="desc">template with placeholder values</span></div></li>
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">package.json</span><span class="desc">scripts: dev, start, test, migrate</span></div></li>
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">jest.config.js</span></div></li>
+
+      </ul>
+    </li>
+
+    <!-- ── FRONTEND ── -->
+    <li class="t-dir open" id="fe">
+      <div class="entry" onclick="tog('fe')">
+        <span class="toggle-icon">▶</span>
+        <span class="icon">📁</span>
+        <span class="label">frontend/</span>
+        <span class="badge b-fe">React · Vite · Tailwind</span>
+      </div>
+      <ul class="children" id="fe-c">
+
+        <li class="t-dir open" id="fesrc">
+          <div class="entry" onclick="tog('fesrc')">
+            <span class="toggle-icon">▶</span>
+            <span class="icon">📁</span>
+            <span class="label">src/</span>
+          </div>
+          <ul class="children" id="fesrc-c">
+
+            <li class="t-dir open" id="api">
+              <div class="entry" onclick="tog('api')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">api/</span>
+                <span class="desc">Axios service layer — one file per domain</span>
+              </div>
+              <ul class="children" id="api-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">axios.js</span><span class="desc">instance + JWT interceptor + 401 auto-logout</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">auth.api.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">project.api.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">task.api.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">dashboard.api.js</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-dir open" id="ctx">
+              <div class="entry" onclick="tog('ctx')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">context/</span>
+                <span class="desc">Global state via React Context + useReducer</span>
+              </div>
+              <ul class="children" id="ctx-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">AuthContext.jsx</span><span class="desc">user, token, login(), logout()</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-dir open" id="pages">
+              <div class="entry" onclick="tog('pages')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">pages/</span>
+                <span class="desc">Route-level components — one folder per page</span>
+              </div>
+              <ul class="children" id="pages-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">LoginPage.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">SignupPage.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">DashboardPage.jsx</span><span class="desc">summary cards, overdue, my tasks</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">ProjectListPage.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">ProjectDetailPage.jsx</span><span class="desc">members, task list, invite</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">CreateProjectPage.jsx</span><span class="desc">Admin only</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">TaskDetailPage.jsx</span><span class="desc">view/edit task, status patch</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">NotFoundPage.jsx</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-dir" id="comp">
+              <div class="entry" onclick="tog('comp')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">components/</span>
+                <span class="desc">Shared UI components</span>
+              </div>
+              <ul class="children hidden" id="comp-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">Navbar.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">Sidebar.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">ProtectedRoute.jsx</span><span class="desc">redirects unauthenticated to /login</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">AdminRoute.jsx</span><span class="desc">403 redirect for non-admins</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">TaskCard.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">StatusBadge.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">PriorityBadge.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">Modal.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">Spinner.jsx</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">EmptyState.jsx</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-dir" id="hk">
+              <div class="entry" onclick="tog('hk')">
+                <span class="toggle-icon">▶</span>
+                <span class="icon">📁</span>
+                <span class="label">hooks/</span>
+                <span class="desc">TanStack Query hooks — one per domain</span>
+              </div>
+              <ul class="children hidden" id="hk-c">
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">useAuth.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">useProjects.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">useTasks.js</span></div></li>
+                <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">useDashboard.js</span></div></li>
+              </ul>
+            </li>
+
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">App.jsx</span><span class="desc">React Router v6 routes, QueryClientProvider</span></div></li>
+            <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">main.jsx</span><span class="desc">ReactDOM.createRoot entry</span></div></li>
+            <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">index.css</span><span class="desc">Tailwind directives (@tailwind base/components/utilities)</span></div></li>
+
+          </ul>
+        </li>
+
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">vite.config.js</span><span class="desc">proxy /api → backend in dev</span></div></li>
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">tailwind.config.js</span></div></li>
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">postcss.config.js</span></div></li>
+        <li class="t-config"><div class="entry"><span class="icon"> </span><span class="label">package.json</span></div></li>
+        <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">index.html</span></div></li>
+
+      </ul>
+    </li>
+
+    <!-- ── ROOT FILES ── -->
+    <li class="t-config"><div class="entry"><span class="icon">🚂</span><span class="label">railway.toml</span><span class="desc">build + deploy + healthcheck config</span></div></li>
+    <li class="t-file"><div class="entry"><span class="icon"> </span><span class="label">README.md</span><span class="desc">live URL · setup · API docs · test creds</span></div></li>
+    <li class="t-env"><div class="entry"><span class="icon">🔒</span><span class="label">.gitignore</span><span class="desc">node_modules, .env, dist, prisma/dev.db</span></div></li>
+
+  </ul>
+</li>
+</ul>
+
+<div class="legend">
+  <span class="litem"><span class="ldot" style="background:var(--color-background-info)"></span>Directory</span>
+  <span class="litem"><span class="ldot" style="background:var(--color-background-success)"></span>API / Controllers</span>
+  <span class="litem"><span class="ldot" style="background:var(--color-background-danger)"></span>Auth & Secrets</span>
+  <span class="litem"><span class="ldot" style="background:var(--color-background-warning)"></span>DB / ORM</span>
+  <span class="litem"><span class="ldot" style="background:#EDE9FE"></span>Frontend</span>
+  <span class="litem"><span class="ldot" style="background:var(--color-background-secondary)"></span>Config</span>
+  <span class="litem" style="margin-left:auto;font-size:11px;color:var(--color-text-tertiary)">Click any folder to expand/collapse</span>
+</div>
+
+</div>
+
+<script>
+function tog(id) {
+  const li = document.getElementById(id);
+  const ch = document.getElementById(id + '-c');
+  if (!ch) return;
+  const isOpen = li.classList.contains('open');
+  li.classList.toggle('open', !isOpen);
+  ch.classList.toggle('hidden', isOpen);
+}
+</script>

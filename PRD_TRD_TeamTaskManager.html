@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Team Task Manager — PRD & TRD</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #1E3A5F;
+    --accent:  #2E86AB;
+    --accent2: #A23B72;
+    --green:   #1E8449;
+    --orange:  #D35400;
+    --bg:      #F8F9FA;
+    --card:    #FFFFFF;
+    --border:  #DEE2E6;
+    --text:    #1C2833;
+    --muted:   #6C757D;
+    --code-bg: #F1F3F5;
+  }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 14px; }
+
+  /* ── layout ── */
+  .page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* ── cover ── */
+  .cover { background: var(--primary); color: #fff; padding: 60px 40px 50px; border-radius: 0 0 20px 20px; margin-bottom: 40px; }
+  .cover h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: .02em; }
+  .cover .sub { font-size: 1.1rem; color: #90CAF9; margin-top: 6px; }
+  .cover .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .badge { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .b-blue   { background: #1565C0; color: #E3F2FD; }
+  .b-green  { background: #1B5E20; color: #E8F5E9; }
+  .b-purple { background: #4A148C; color: #F3E5F5; }
+  .b-orange { background: #BF360C; color: #FBE9E7; }
+  .b-teal   { background: #004D40; color: #E0F2F1; }
+  .cover .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 32px; }
+  .meta-item { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; padding: 12px 16px; }
+  .meta-item .mk { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #90CAF9; }
+  .meta-item .mv { font-size: 14px; font-weight: 600; margin-top: 2px; }
+
+  /* ── doc nav ── */
+  .doc-nav { display: flex; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+  .nav-btn { padding: 8px 20px; border: 2px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; text-decoration: none; }
+  .nav-btn:hover, .nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── section ── */
+  .section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px 36px; margin-bottom: 24px; }
+  .section-tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 3px 10px; border-radius: 5px; margin-bottom: 10px; }
+  .tag-prd  { background: #E3F2FD; color: #1565C0; }
+  .tag-trd  { background: #F3E5F5; color: #6A1B9A; }
+  .tag-note { background: #FFF3E0; color: #BF360C; }
+
+  h1.sec-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 3px solid var(--accent); }
+  h2.sub-title { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin: 22px 0 10px; }
+  h3.sub-sub   { font-size: .95rem; font-weight: 700; color: var(--accent2); margin: 16px 0 8px; }
+
+  p  { margin-bottom: 10px; }
+  ul { padding-left: 22px; margin-bottom: 10px; }
+  li { margin-bottom: 4px; }
+
+  /* ── info boxes ── */
+  .info-box { border-radius: 10px; overflow: hidden; margin: 14px 0; }
+  .info-box .ib-head { padding: 8px 16px; font-size: 13px; font-weight: 700; color: #fff; }
+  .info-box .ib-body { padding: 14px 16px; font-size: 13px; line-height: 1.8; }
+  .ib-blue   .ib-head { background: var(--accent); }
+  .ib-blue   .ib-body { background: #EBF5FB; }
+  .ib-green  .ib-head { background: var(--green); }
+  .ib-green  .ib-body { background: #E9F7EF; }
+  .ib-orange .ib-head { background: var(--orange); }
+  .ib-orange .ib-body { background: #FDEBD0; }
+  .ib-purple .ib-head { background: var(--accent2); }
+  .ib-purple .ib-body { background: #F9EBF8; }
+  .ib-dark   .ib-head { background: var(--primary); }
+  .ib-dark   .ib-body { background: #EAF0F6; }
+
+  /* ── code block ── */
+  .code-block { background: #1E2A3A; color: #A8D8EA; border-radius: 8px; padding: 14px 18px; font-family: 'Cascadia Code', 'Courier New', monospace; font-size: 12.5px; line-height: 1.7; overflow-x: auto; margin: 12px 0; }
+  .code-block .kw  { color: #79C0FF; }
+  .code-block .str { color: #A5D6A7; }
+  .code-block .cm  { color: #6A737D; }
+
+  /* ── tables ── */
+  .tbl-wrap { overflow-x: auto; margin: 14px 0; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; letter-spacing: .04em; white-space: nowrap; }
+  tbody tr:nth-child(odd)  { background: #F8FBFF; }
+  tbody tr:nth-child(even) { background: #fff; }
+  tbody td { padding: 9px 14px; border-bottom: 1px solid #EEF2F7; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ── pill status ── */
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .p-p0     { background: #FFCDD2; color: #B71C1C; }
+  .p-p1     { background: #FFF9C4; color: #F57F17; }
+  .p-p2     { background: #E8F5E9; color: #1B5E20; }
+  .p-admin  { background: #EDE7F6; color: #4527A0; }
+  .p-all    { background: #E0F2F1; color: #004D40; }
+  .p-sys    { background: #ECEFF1; color: #37474F; }
+
+  /* ── flow steps ── */
+  .steps { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .step  { display: flex; align-items: flex-start; gap: 14px; }
+  .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 1px; }
+  .step-body { flex: 1; }
+  .step-body strong { color: var(--primary); }
+
+  /* ── two col ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+  @media(max-width:640px){ .two-col { grid-template-columns: 1fr; } }
+
+  /* ── role card ── */
+  .role-card { border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .role-card h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .role-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* ── accordion (TRD sections) ── */
+  .acc-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 10px 0; user-select: none; }
+  .acc-head:hover h2 { color: var(--primary); }
+  .acc-arrow { font-size: 12px; color: var(--muted); transition: transform .2s; }
+  .acc-body { display: none; }
+  .acc-open .acc-body { display: block; }
+  .acc-open .acc-arrow { transform: rotate(90deg); }
+
+  /* ── env var list ── */
+  .env-list { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+  .env-item { display: flex; align-items: center; gap: 10px; background: var(--code-bg); border-radius: 6px; padding: 7px 12px; }
+  .env-key   { font-family: monospace; font-size: 12px; font-weight: 700; color: var(--primary); min-width: 180px; }
+  .env-val   { font-size: 12px; color: var(--muted); }
+  .env-tag   { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+  .et-secret { background: #FFCDD2; color: #B71C1C; }
+  .et-auto   { background: #E8F5E9; color: #1B5E20; }
+  .et-set    { background: #E3F2FD; color: #1565C0; }
+
+  /* ── metric cards ── */
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 14px 0; }
+  .metric-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: center; }
+  .metric-card .mc-val { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .metric-card .mc-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ── stack table ── */
+  .stack-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 4px; }
+  .stack-row:nth-child(odd) { background: var(--code-bg); }
+  .stack-icon { font-size: 16px; width: 24px; text-align: center; }
+  .stack-name { font-weight: 600; font-size: 13px; min-width: 140px; }
+  .stack-ver  { font-size: 12px; color: var(--muted); min-width: 80px; }
+  .stack-why  { font-size: 12px; color: var(--text); }
+
+  /* ── scrollspy toc ── */
+  .toc { position: sticky; top: 20px; }
+  .toc-inner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .toc h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+  .toc a  { display: block; font-size: 12px; padding: 4px 0; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; padding-left: 8px; transition: all .15s; }
+  .toc a:hover { color: var(--accent); border-color: var(--accent); }
+  .toc .toc-prd { color: #1565C0; border-color: #1565C0; font-weight: 600; margin-top: 8px; }
+  .toc .toc-trd { color: #6A1B9A; border-color: #6A1B9A; font-weight: 600; margin-top: 8px; }
+
+  .layout { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start; }
+  @media(max-width:860px){ .layout { grid-template-columns: 1fr; } .toc { display: none; } }
+
+  /* print */
+  @media print { .toc,.doc-nav,.cover .badges { display:none; } body { font-size: 12px; } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ COVER ══════════════════════ -->
+<div class="cover">
+  <div class="page-wrap">
+    <div class="mk" style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#90CAF9;margin-bottom:8px;">Product & Technical Documentation</div>
+    <h1>Team Task Manager</h1>
+    <div class="sub">Full-Stack Web Application — PRD & TRD v1.0</div>
+    <div class="badges">
+      <span class="badge b-blue">Node.js · Express</span>
+      <span class="badge b-green">PostgreSQL · Prisma</span>
+      <span class="badge b-purple">React · Vite · Tailwind</span>
+      <span class="badge b-orange">Railway Deploy</span>
+      <span class="badge b-teal">JWT · RBAC</span>
+    </div>
+    <div class="meta">
+      <div class="meta-item"><div class="mk">Version</div><div class="mv">1.0.0</div></div>
+      <div class="meta-item"><div class="mk">Date</div><div class="mv">May 2026</div></div>
+      <div class="meta-item"><div class="mk">Deployment</div><div class="mv">Railway</div></div>
+      <div class="meta-item"><div class="mk">Stack</div><div class="mv">PERN + JWT</div></div>
+      <div class="meta-item"><div class="mk">Roles</div><div class="mv">Admin · Member</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+<div class="layout">
+
+<!-- ══════════════════════ TOC ══════════════════════ -->
+<aside class="toc">
+  <div class="toc-inner">
+    <h4>Contents</h4>
+    <a href="#overview"  class="toc-prd">PRD</a>
+    <a href="#p1">1. Overview</a>
+    <a href="#p2">2. Goals & Metrics</a>
+    <a href="#p3">3. Roles</a>
+    <a href="#p4">4. Features</a>
+    <a href="#p5">5. User Flows</a>
+    <a href="#p6">6. Non-Functional</a>
+    <a href="#p7">7. Constraints</a>
+    <a href="#architecture" class="toc-trd" style="margin-top:14px">TRD</a>
+    <a href="#t1">T1. Architecture</a>
+    <a href="#t2">T2. DB Schema</a>
+    <a href="#t3">T3. API Spec</a>
+    <a href="#t4">T4. Auth & RBAC</a>
+    <a href="#t5">T5. Validation</a>
+    <a href="#t6">T6. Errors</a>
+    <a href="#t7">T7. Frontend</a>
+    <a href="#t8">T8. Deployment</a>
+    <a href="#t9">T9. Testing</a>
+    <a href="#t10">T10. README</a>
+    <a href="#t11">T11. Tech Stack</a>
+  </div>
+</aside>
+
+<!-- ══════════════════════ MAIN ══════════════════════ -->
+<main id="overview">
+
+<!-- ─────────────────── PRD SECTIONS ─────────────────── -->
+
+<!-- P1 -->
+<div class="section" id="p1">
+  <span class="section-tag tag-prd">PRD — Section 1</span>
+  <h1 class="sec-title">Product Overview</h1>
+  <p>Team Task Manager is a collaborative, full-stack web application that enables teams to create projects, manage tasks, assign work to team members, and track overall progress — all through a clean, role-aware interface.</p>
+  <p>It targets small-to-medium engineering and product teams that need structured work management without the overhead of enterprise tools.</p>
+  <div class="info-box ib-blue">
+    <div class="ib-head">📌 Problem Statement</div>
+    <div class="ib-body">
+      Teams working without a centralized task system lose velocity to miscommunication, forgotten work, and unclear ownership.<br>
+      Existing tools are either too heavyweight (Jira) or lack proper role-based access. This product fills the mid-market gap.
+    </div>
+  </div>
+</div>
+
+<!-- P2 -->
+<div class="section" id="p2">
+  <span class="section-tag tag-prd">PRD — Section 2</span>
+  <h1 class="sec-title">Goals & Success Metrics</h1>
+
+  <h2 class="sub-title">2.1 Product Goals</h2>
+  <ul>
+    <li>Enable teams to organize work into Projects and Tasks with clear ownership</li>
+    <li>Enforce role-based access so Admins govern the workspace and Members execute</li>
+    <li>Provide a real-time dashboard showing task health, overdue items, and progress</li>
+    <li>Deliver a live, deployable product accessible via a public Railway URL</li>
+  </ul>
+
+  <h2 class="sub-title">2.2 Success Metrics</h2>
+  <div class="metric-grid">
+    <div class="metric-card"><div class="mc-val">&gt;80%</div><div class="mc-label">Signup-to-Task rate</div></div>
+    <div class="metric-card"><div class="mc-val">&lt;200ms</div><div class="mc-label">API response (p95)</div></div>
+    <div class="metric-card"><div class="mc-val">99.5%</div><div class="mc-label">Uptime on Railway</div></div>
+    <div class="metric-card"><div class="mc-val">100%</div><div class="mc-label">RBAC accuracy</div></div>
+    <div class="metric-card"><div class="mc-val">&lt;1s</div><div class="mc-label">Overdue visibility</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Target</th><th>Measurement</th></tr></thead>
+      <tbody>
+        <tr><td>User Signup-to-Task Rate</td><td>&gt; 80%</td><td>DB analytics</td></tr>
+        <tr><td>API Response Time (p95)</td><td>&lt; 200 ms</td><td>Railway logs</td></tr>
+        <tr><td>Uptime</td><td>&gt; 99.5%</td><td>Railway health checks</td></tr>
+        <tr><td>Role Enforcement Accuracy</td><td>100%</td><td>Automated test suite</td></tr>
+        <tr><td>Overdue Task Visibility</td><td>Within 1 second</td><td>Frontend profiling</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- P3 -->
+<div class="section" id="p3">
+  <span class="section-tag tag-prd">PRD — Section 3</span>
+  <h1 class="sec-title">User Personas & Role Definitions</h1>
+
+  <div class="two-col">
+    <div class="role-card">
+      <h3><span class="role-dot" style="background:#6A1B9A"></span> Admin</h3>
+      <ul>
+        <li>Create, edit, and delete Projects</li>
+        <li>Invite users and assign Member role</li>
+        <li>Create, assign, edit, delete any Task</li>
+        <li>View all dashboards and analytics</li>
+        <li>Promote Member to Admin or remove users</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <h3><span class="role-dot" style="background:#00695C"></span> Member</h3>
+      <ul>
+        <li>View Projects they belong to</li>
+        <li>Create Tasks within those Projects</li>
+        <li>Update status of Tasks assigned to them</li>
+        <li>Cannot delete Projects or manage team</li>
+        <li>Cannot access Projects they are not part of</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="role-card" style="margin-top:12px">
+    <h3><span class="role-dot" style="background:#B0BEC5"></span> Unauthenticated User</h3>
+    <ul>
+      <li>Can only access the Signup and Login pages</li>
+      <li>All other routes redirect to Login</li>
+    </ul>
+  </div>
+</div>
+
+<!-- P4 -->
+<div class="section" id="p4">
+  <span class="section-tag tag-prd">PRD — Section 4</span>
+  <h1 class="sec-title">Feature Requirements</h1>
+
+  <h2 class="sub-title">4.1 Authentication</h2>
+  <div class="info-box ib-green">
+    <div class="ib-head">🔐 Auth Module</div>
+    <div class="ib-body">
+      <b>F-AUTH-01:</b> User can register with name, email, and password<br>
+      <b>F-AUTH-02:</b> User can log in with email and password<br>
+      <b>F-AUTH-03:</b> Passwords are hashed (bcrypt, min 10 rounds)<br>
+      <b>F-AUTH-04:</b> JWT tokens issued on login, 24-hour expiry<br>
+      <b>F-AUTH-05:</b> Protected routes reject unauthenticated requests with 401<br>
+      <b>F-AUTH-06:</b> Logout clears the token client-side
+    </div>
+  </div>
+
+  <h2 class="sub-title">4.2 Project Management</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature ID</th><th>Feature</th><th>Role</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>F-PROJ-01</td><td>Create a new Project with name &amp; description</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-PROJ-02</td><td>List all Projects the user belongs to</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-PROJ-03</td><td>View a single Project's detail page</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-PROJ-04</td><td>Edit Project name and description</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-PROJ-05</td><td>Delete a Project (cascades to tasks &amp; membership)</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p1">P1</span></td></tr>
+        <tr><td>F-PROJ-06</td><td>Invite users to a Project by email</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-PROJ-07</td><td>Remove a Member from a Project</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p1">P1</span></td></tr>
+        <tr><td>F-PROJ-08</td><td>View all Members of a Project</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p1">P1</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub-title">4.3 Task Management</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Feature ID</th><th>Feature</th><th>Role</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>F-TASK-01</td><td>Create a Task with title, description, due date, priority</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-TASK-02</td><td>Assign a Task to any Project member</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-TASK-03</td><td>Update Task status: Todo → In Progress → Done</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-TASK-04</td><td>Edit Task fields (title, desc, due date, priority)</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-TASK-05</td><td>Delete a Task</td><td><span class="pill p-admin">Admin</span></td><td><span class="pill p-p1">P1</span></td></tr>
+        <tr><td>F-TASK-06</td><td>Filter Tasks by status, priority, assignee</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p1">P1</span></td></tr>
+        <tr><td>F-TASK-07</td><td>Mark Task as overdue (auto-detected from due date)</td><td><span class="pill p-sys">System</span></td><td><span class="pill p-p0">P0</span></td></tr>
+        <tr><td>F-TASK-08</td><td>Comment on a Task</td><td><span class="pill p-all">All</span></td><td><span class="pill p-p2">P2</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub-title">4.4 Dashboard</h2>
+  <ul>
+    <li><b>F-DASH-01:</b> Summary cards — total projects, total tasks, tasks due today</li>
+    <li><b>F-DASH-02:</b> Task status breakdown chart (Todo / In Progress / Done)</li>
+    <li><b>F-DASH-03:</b> Overdue tasks list, sorted by most overdue</li>
+    <li><b>F-DASH-04:</b> My Tasks widget showing tasks assigned to current user</li>
+    <li><b>F-DASH-05:</b> Recent activity feed showing last 10 task updates</li>
+  </ul>
+</div>
+
+<!-- P5 -->
+<div class="section" id="p5">
+  <span class="section-tag tag-prd">PRD — Section 5</span>
+  <h1 class="sec-title">Key User Flows</h1>
+
+  <h2 class="sub-title">5.1 Onboarding Flow</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body">User visits app URL → <strong>redirected to /login</strong></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">User clicks "Sign Up" → navigates to <strong>/signup</strong></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body">User fills name, email, password → <strong>account created, JWT issued</strong></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body">Redirected to dashboard → <strong>sees empty state with CTA</strong></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body">Admin creates first Project → <strong>appears in sidebar</strong></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-body">Admin invites a Member → <strong>Member receives project access</strong></div></div>
+  </div>
+
+  <h2 class="sub-title">5.2 Task Lifecycle Flow</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body">Admin <strong>creates Task</strong> → assigns to Member → sets due date &amp; priority</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">Member views task in "My Tasks" → changes status to <strong>In Progress</strong></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body">Member marks task as <strong>Done</strong> → Admin sees update on dashboard</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body">System flags task as <strong>Overdue</strong> if past due date and not Done</div></div>
+  </div>
+</div>
+
+<!-- P6 -->
+<div class="section" id="p6">
+  <span class="section-tag tag-prd">PRD — Section 6</span>
+  <h1 class="sec-title">Non-Functional Requirements</h1>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Category</th><th>Requirement</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td>Performance</td><td>API response time (p95)</td><td>&lt; 200 ms</td></tr>
+        <tr><td>Security</td><td>Password storage</td><td>bcrypt, 10+ rounds</td></tr>
+        <tr><td>Security</td><td>Token-based auth</td><td>JWT, 24h expiry, HTTPS only</td></tr>
+        <tr><td>Security</td><td>SQL injection prevention</td><td>Prisma parameterized queries</td></tr>
+        <tr><td>Availability</td><td>Uptime SLA</td><td>&gt; 99.5% on Railway</td></tr>
+        <tr><td>Scalability</td><td>Concurrent users (initial)</td><td>Up to 200 concurrent</td></tr>
+        <tr><td>Accessibility</td><td>WCAG compliance</td><td>AA level, keyboard navigable</td></tr>
+        <tr><td>Browser support</td><td>Chrome, Firefox, Safari, Edge</td><td>Latest 2 versions</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- P7 -->
+<div class="section" id="p7">
+  <span class="section-tag tag-prd">PRD — Section 7</span>
+  <h1 class="sec-title">Constraints & Assumptions</h1>
+
+  <h2 class="sub-title">7.1 Constraints</h2>
+  <ul>
+    <li>Must deploy on <b>Railway</b> — no other cloud provider accepted for submission</li>
+    <li>No third-party auth providers (no Google OAuth) — custom JWT only</li>
+    <li>Single codebase — monorepo preferred for Railway deployment simplicity</li>
+  </ul>
+
+  <h2 class="sub-title">7.2 Assumptions</h2>
+  <ul>
+    <li>Users have a valid email address for registration</li>
+    <li>A user can belong to multiple projects (v1 scopes role per workspace)</li>
+    <li>No real-time websocket updates in v1 — polling or manual refresh is acceptable</li>
+  </ul>
+</div>
+
+
+<!-- ─────────────────── TRD SECTIONS ─────────────────── -->
+
+<div id="architecture"></div>
+
+<!-- T1 -->
+<div class="section" id="t1">
+  <span class="section-tag tag-trd">TRD — Section T1</span>
+  <h1 class="sec-title">System Architecture</h1>
+
+  <h2 class="sub-title">T1.1 Architecture Overview</h2>
+  <p>Three-tier architecture: React SPA (frontend) → Node.js/Express REST API (backend) → PostgreSQL database, all deployed as separate Railway services.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Deployment</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>React 18 + Vite + TailwindCSS</td><td>Railway Static</td><td>SPA, communicates via REST</td></tr>
+        <tr><td>Backend API</td><td>Node.js 20 + Express 5</td><td>Railway Web Service</td><td>REST, JWT auth middleware</td></tr>
+        <tr><td>Database</td><td>PostgreSQL 16</td><td>Railway Postgres Plugin</td><td>Managed, auto-backups</td></tr>
+        <tr><td>ORM</td><td>Prisma ORM</td><td>Bundled with backend</td><td>Migrations, type safety</td></tr>
+        <tr><td>Auth</td><td>JWT + bcrypt</td><td>Stateless</td><td>Access token in Authorization header</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub-title">T1.2 Directory Structure</h2>
+  <div class="code-block">
+<span class="cm">team-task-manager/              ← monorepo root</span>
+├── <span class="kw">backend/</span>
+│   ├── src/
+│   │   ├── <span class="kw">controllers/</span>        <span class="cm">← route handlers (thin layer)</span>
+│   │   │   ├── authController.js
+│   │   │   ├── projectController.js
+│   │   │   ├── taskController.js
+│   │   │   └── dashboardController.js
+│   │   ├── <span class="kw">middleware/</span>         <span class="cm">← auth, RBAC, validation</span>
+│   │   │   ├── auth.js
+│   │   │   ├── rbac.js
+│   │   │   ├── loadProjectMember.js
+│   │   │   ├── validate.js
+│   │   │   └── errorHandler.js
+│   │   ├── <span class="kw">routes/</span>             <span class="cm">← Express routers</span>
+│   │   │   ├── auth.routes.js
+│   │   │   ├── project.routes.js
+│   │   │   ├── task.routes.js
+│   │   │   └── dashboard.routes.js
+│   │   ├── <span class="kw">services/</span>           <span class="cm">← business logic, calls Prisma</span>
+│   │   │   ├── auth.service.js
+│   │   │   ├── project.service.js
+│   │   │   ├── task.service.js
+│   │   │   └── dashboard.service.js
+│   │   ├── <span class="kw">validators/</span>         <span class="cm">← Zod schemas</span>
+│   │   ├── <span class="kw">utils/</span>              <span class="cm">← jwt.js, AppError.js, catchAsync.js</span>
+│   │   ├── app.js
+│   │   └── server.js               <span class="cm">← entry point for Railway</span>
+│   ├── <span class="kw">prisma/</span>
+│   │   ├── schema.prisma
+│   │   ├── migrations/
+│   │   └── seed.js
+│   ├── tests/
+│   ├── .env                        <span class="cm">← never commit!</span>
+│   ├── .env.example
+│   └── package.json
+│
+├── <span class="kw">frontend/</span>
+│   ├── src/
+│   │   ├── <span class="kw">api/</span>                <span class="cm">← Axios service layer</span>
+│   │   │   ├── axios.js            <span class="cm">← JWT interceptor + 401 logout</span>
+│   │   │   ├── auth.api.js
+│   │   │   ├── project.api.js
+│   │   │   ├── task.api.js
+│   │   │   └── dashboard.api.js
+│   │   ├── <span class="kw">context/</span>
+│   │   │   └── AuthContext.jsx     <span class="cm">← user, token, login(), logout()</span>
+│   │   ├── <span class="kw">pages/</span>
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── SignupPage.jsx
+│   │   │   ├── DashboardPage.jsx
+│   │   │   ├── ProjectListPage.jsx
+│   │   │   ├── ProjectDetailPage.jsx
+│   │   │   ├── CreateProjectPage.jsx
+│   │   │   ├── TaskDetailPage.jsx
+│   │   │   └── NotFoundPage.jsx
+│   │   ├── <span class="kw">components/</span>
+│   │   │   ├── ProtectedRoute.jsx  <span class="cm">← redirects unauthenticated → /login</span>
+│   │   │   ├── AdminRoute.jsx      <span class="cm">← 403 redirect for non-admins</span>
+│   │   │   ├── Navbar.jsx, Sidebar.jsx
+│   │   │   ├── TaskCard.jsx, StatusBadge.jsx
+│   │   │   └── Modal.jsx, Spinner.jsx
+│   │   ├── <span class="kw">hooks/</span>              <span class="cm">← TanStack Query hooks per domain</span>
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css               <span class="cm">← Tailwind directives</span>
+│   ├── vite.config.js              <span class="cm">← proxy /api → backend in dev</span>
+│   ├── tailwind.config.js
+│   └── package.json
+│
+├── railway.toml                    <span class="cm">← Railway deploy config</span>
+├── .gitignore
+└── README.md
+  </div>
+</div>
+
+<!-- T2 -->
+<div class="section" id="t2">
+  <span class="section-tag tag-trd">TRD — Section T2</span>
+  <h1 class="sec-title">Database Schema</h1>
+  <p>5 core entities: <b>User, Project, ProjectMember, Task, Comment</b>. Relationships enforce referential integrity via foreign keys.</p>
+
+  <h3 class="sub-sub">users</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>UUID</td><td>PK, DEFAULT gen_random_uuid()</td><td></td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td></td></tr>
+      <tr><td><code>email</code></td><td>VARCHAR(255)</td><td>NOT NULL, UNIQUE</td><td>Login identifier</td></tr>
+      <tr><td><code>password_hash</code></td><td>TEXT</td><td>NOT NULL</td><td>bcrypt hash</td></tr>
+      <tr><td><code>role</code></td><td>ENUM(admin, member)</td><td>NOT NULL, DEFAULT member</td><td>Workspace-level role</td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-sub">projects</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr>
+      <tr><td><code>name</code></td><td>VARCHAR(150)</td><td>NOT NULL</td><td></td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>—</td><td>Optional</td></tr>
+      <tr><td><code>owner_id</code></td><td>UUID</td><td>FK → users.id, NOT NULL</td><td>Creator, always Admin</td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td></td></tr>
+      <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>ON UPDATE</td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-sub">project_members</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr>
+      <tr><td><code>project_id</code></td><td>UUID</td><td>FK → projects.id, CASCADE</td><td></td></tr>
+      <tr><td><code>user_id</code></td><td>UUID</td><td>FK → users.id, CASCADE</td><td></td></tr>
+      <tr><td><code>role</code></td><td>ENUM(admin, member)</td><td>DEFAULT member</td><td>Per-project override</td></tr>
+      <tr><td><code>joined_at</code></td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--accent2);">★ Unique constraint on (project_id, user_id)</p>
+
+  <h3 class="sub-sub">tasks</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>UUID</td><td>PK</td><td></td></tr>
+      <tr><td><code>project_id</code></td><td>UUID</td><td>FK → projects.id, CASCADE</td><td></td></tr>
+      <tr><td><code>title</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td></td></tr>
+      <tr><td><code>description</code></td><td>TEXT</td><td>—</td><td></td></tr>
+      <tr><td><code>status</code></td><td>ENUM</td><td>DEFAULT todo</td><td>todo | in_progress | done</td></tr>
+      <tr><td><code>priority</code></td><td>ENUM</td><td>DEFAULT medium</td><td>low | medium | high</td></tr>
+      <tr><td><code>due_date</code></td><td>DATE</td><td>—</td><td>Null = no deadline</td></tr>
+      <tr><td><code>assignee_id</code></td><td>UUID</td><td>FK → users.id, SET NULL</td><td></td></tr>
+      <tr><td><code>created_by</code></td><td>UUID</td><td>FK → users.id, NOT NULL</td><td></td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>DEFAULT NOW()</td><td></td></tr>
+      <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>ON UPDATE</td><td></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub-sub">comments (P2)</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Column</th><th>Type</th><th>Constraints</th></tr></thead>
+    <tbody>
+      <tr><td><code>id</code></td><td>UUID</td><td>PK</td></tr>
+      <tr><td><code>task_id</code></td><td>UUID</td><td>FK → tasks.id, CASCADE</td></tr>
+      <tr><td><code>user_id</code></td><td>UUID</td><td>FK → users.id, CASCADE</td></tr>
+      <tr><td><code>body</code></td><td>TEXT</td><td>NOT NULL</td></tr>
+      <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>DEFAULT NOW()</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- T3 -->
+<div class="section" id="t3">
+  <span class="section-tag tag-trd">TRD — Section T3</span>
+  <h1 class="sec-title">REST API Specification</h1>
+  <p>All routes prefixed with <code>/api/v1</code>. Protected endpoints require <code>Authorization: Bearer &lt;token&gt;</code> header.</p>
+
+  <h2 class="sub-title">Auth Endpoints</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Auth?</th><th>Body / Response</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-p0">POST</span></td><td><code>/api/v1/auth/signup</code></td><td>No</td><td>{ name, email, password } → { user, token }</td></tr>
+      <tr><td><span class="pill p-p0">POST</span></td><td><code>/api/v1/auth/login</code></td><td>No</td><td>{ email, password } → { user, token }</td></tr>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/auth/me</code></td><td>Yes</td><td>→ { user }</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sub-title">Project Endpoints</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Role</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/projects</code></td><td>All</td><td>List projects for current user</td></tr>
+      <tr><td><span class="pill p-p0">POST</span></td><td><code>/api/v1/projects</code></td><td>Admin</td><td>Create new project</td></tr>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/projects/:id</code></td><td>Member+</td><td>Get project detail</td></tr>
+      <tr><td><span class="pill p-p1">PUT</span></td><td><code>/api/v1/projects/:id</code></td><td>Admin</td><td>Update project</td></tr>
+      <tr><td><span class="pill p-p0" style="background:#FFCDD2">DEL</span></td><td><code>/api/v1/projects/:id</code></td><td>Admin</td><td>Delete project + cascade</td></tr>
+      <tr><td><span class="pill p-p0">POST</span></td><td><code>/api/v1/projects/:id/members</code></td><td>Admin</td><td>Invite user by email</td></tr>
+      <tr><td><span class="pill p-p0" style="background:#FFCDD2">DEL</span></td><td><code>/api/v1/projects/:id/members/:uid</code></td><td>Admin</td><td>Remove member</td></tr>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/projects/:id/members</code></td><td>Member+</td><td>List project members</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sub-title">Task Endpoints</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Role</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/projects/:id/tasks</code></td><td>Member+</td><td>List tasks (supports filters)</td></tr>
+      <tr><td><span class="pill p-p0">POST</span></td><td><code>/api/v1/projects/:id/tasks</code></td><td>Member+</td><td>Create task</td></tr>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/tasks/:taskId</code></td><td>Member+</td><td>Get single task</td></tr>
+      <tr><td><span class="pill p-p1">PUT</span></td><td><code>/api/v1/tasks/:taskId</code></td><td>Admin/Assignee</td><td>Update task</td></tr>
+      <tr><td><span class="pill p-p0" style="background:#FFCDD2">DEL</span></td><td><code>/api/v1/tasks/:taskId</code></td><td>Admin</td><td>Delete task</td></tr>
+      <tr><td><span class="pill p-p1">PATCH</span></td><td><code>/api/v1/tasks/:taskId/status</code></td><td>Admin/Assignee</td><td>Update status only</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sub-title">Dashboard Endpoint</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Response</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-p2">GET</span></td><td><code>/api/v1/dashboard</code></td><td>{ totalProjects, tasksByStatus, overdueTasks, myTasks, recentActivity }</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- T4 -->
+<div class="section" id="t4">
+  <span class="section-tag tag-trd">TRD — Section T4</span>
+  <h1 class="sec-title">Authentication & RBAC</h1>
+
+  <h2 class="sub-title">T4.1 JWT Flow</h2>
+  <ul>
+    <li>On successful login → server signs JWT with <code>{ userId, email, role, exp: 24h }</code></li>
+    <li>Client stores token (localStorage or memory)</li>
+    <li>Every API call sends token in <code>Authorization: Bearer</code> header</li>
+    <li><code>auth.js</code> middleware verifies token, attaches <code>req.user</code> — rejects with 401 on failure</li>
+  </ul>
+
+  <h2 class="sub-title">T4.2 RBAC Middleware Pattern</h2>
+  <div class="code-block">
+<span class="cm">// rbac.js — requireRole middleware</span>
+<span class="kw">const</span> requireRole = (...roles) => (req, res, next) => {
+  <span class="kw">const</span> memberRole = req.projectMember?.role;
+  <span class="kw">if</span> (!roles.includes(memberRole)) {
+    <span class="kw">return</span> res.status(403).json({ error: <span class="str">'Forbidden'</span> });
+  }
+  next();
+};
+
+<span class="cm">// Usage in route:</span>
+router.delete(
+  <span class="str">'/:id'</span>,
+  auth,               <span class="cm">← verify JWT</span>
+  loadProjectMember,  <span class="cm">← attach membership + role</span>
+  requireRole(<span class="str">'admin'</span>),
+  deleteProject
+);
+  </div>
+
+  <h2 class="sub-title">T4.3 loadProjectMember Middleware</h2>
+  <p>For any route with <code>:projectId</code> or <code>:taskId</code>, this middleware queries <code>project_members</code> to confirm the user belongs to the project and fetches their role. This powers all per-project RBAC decisions.</p>
+</div>
+
+<!-- T5 -->
+<div class="section" id="t5">
+  <span class="section-tag tag-trd">TRD — Section T5</span>
+  <h1 class="sec-title">Validation Rules</h1>
+  <p style="margin-bottom:12px">Use <b>Zod</b> for all input validation on the server side. Return <b>422 Unprocessable Entity</b> with error array on failure.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Field</th><th>Rule</th><th>Error Message</th></tr></thead>
+    <tbody>
+      <tr><td>email (signup)</td><td>Valid RFC email, unique in DB</td><td>Invalid email / Email already exists</td></tr>
+      <tr><td>password (signup)</td><td>Min 8 chars, 1 uppercase, 1 number</td><td>Password too weak</td></tr>
+      <tr><td>name (signup)</td><td>2–100 chars, not blank</td><td>Name required</td></tr>
+      <tr><td>project name</td><td>3–150 chars, not blank</td><td>Project name must be 3-150 characters</td></tr>
+      <tr><td>task title</td><td>3–200 chars, not blank</td><td>Task title required</td></tr>
+      <tr><td>task due_date</td><td>ISO 8601 date, not in past</td><td>Due date must be today or future</td></tr>
+      <tr><td>task status</td><td>Enum: todo, in_progress, done</td><td>Invalid status value</td></tr>
+      <tr><td>task priority</td><td>Enum: low, medium, high</td><td>Invalid priority value</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- T6 -->
+<div class="section" id="t6">
+  <span class="section-tag tag-trd">TRD — Section T6</span>
+  <h1 class="sec-title">Error Handling Strategy</h1>
+  <p style="margin-bottom:12px">A global Express error handler middleware centralizes all error responses. <b>Never expose stack traces in production.</b></p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>HTTP Status</th><th>When Used</th><th>Response Shape</th></tr></thead>
+    <tbody>
+      <tr><td>200 OK</td><td>Successful GET, PUT, PATCH</td><td>{ data: ... }</td></tr>
+      <tr><td>201 Created</td><td>Successful POST</td><td>{ data: ... }</td></tr>
+      <tr><td>204 No Content</td><td>Successful DELETE</td><td>(empty body)</td></tr>
+      <tr><td>400 Bad Request</td><td>Malformed request body</td><td>{ error: 'message' }</td></tr>
+      <tr><td>401 Unauthorized</td><td>Missing or invalid JWT</td><td>{ error: 'Unauthorized' }</td></tr>
+      <tr><td>403 Forbidden</td><td>Valid JWT but insufficient role</td><td>{ error: 'Forbidden' }</td></tr>
+      <tr><td>404 Not Found</td><td>Resource does not exist</td><td>{ error: 'Not found' }</td></tr>
+      <tr><td>422 Unprocessable</td><td>Validation errors</td><td>{ errors: [...] }</td></tr>
+      <tr><td>500 Internal Error</td><td>Unhandled server error</td><td>{ error: 'Internal server error' }</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- T7 -->
+<div class="section" id="t7">
+  <span class="section-tag tag-trd">TRD — Section T7</span>
+  <h1 class="sec-title">Frontend Architecture</h1>
+
+  <h2 class="sub-title">T7.1 Pages & Routes</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Route</th><th>Page</th><th>Auth?</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td><code>/login</code></td><td>LoginPage</td><td>No</td><td>—</td></tr>
+      <tr><td><code>/signup</code></td><td>SignupPage</td><td>No</td><td>—</td></tr>
+      <tr><td><code>/dashboard</code></td><td>DashboardPage</td><td>Yes</td><td>All</td></tr>
+      <tr><td><code>/projects</code></td><td>ProjectListPage</td><td>Yes</td><td>All</td></tr>
+      <tr><td><code>/projects/:id</code></td><td>ProjectDetailPage</td><td>Yes</td><td>Member+</td></tr>
+      <tr><td><code>/projects/:id/tasks</code></td><td>TaskListPage</td><td>Yes</td><td>Member+</td></tr>
+      <tr><td><code>/projects/:id/tasks/:taskId</code></td><td>TaskDetailPage</td><td>Yes</td><td>Member+</td></tr>
+      <tr><td><code>/projects/new</code></td><td>CreateProjectPage</td><td>Yes</td><td>Admin only</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sub-title">T7.2 State Management</h2>
+  <ul>
+    <li><b>AuthContext + useReducer</b> — global auth state (user, token, login, logout)</li>
+    <li><b>TanStack Query</b> — server state, caching, background refetch</li>
+    <li><b>useState</b> — local component state for forms and UI</li>
+  </ul>
+
+  <h2 class="sub-title">T7.3 API Service Layer</h2>
+  <p>All HTTP calls centralized in <code>/frontend/src/api/</code>. Axios instance with interceptors: request interceptor attaches JWT, response interceptor handles 401 → auto-logout.</p>
+</div>
+
+<!-- T8 -->
+<div class="section" id="t8">
+  <span class="section-tag tag-trd">TRD — Section T8</span>
+  <h1 class="sec-title">Deployment on Railway</h1>
+
+  <h2 class="sub-title">T8.1 Services</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Railway Service</th><th>Type</th><th>Start Command</th></tr></thead>
+    <tbody>
+      <tr><td>backend</td><td>Web Service</td><td><code>npm install &amp;&amp; npx prisma migrate deploy &amp;&amp; node src/server.js</code></td></tr>
+      <tr><td>postgres</td><td>Plugin</td><td>Auto-provisioned — DATABASE_URL injected</td></tr>
+      <tr><td>frontend</td><td>Static</td><td><code>npm run build</code> → serve <code>/dist</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2 class="sub-title">T8.2 Environment Variables</h2>
+  <div class="env-list">
+    <div class="env-item"><span class="env-key">DATABASE_URL</span><span class="env-val">Auto-injected by Railway Postgres plugin</span><span class="env-tag et-auto">auto</span></div>
+    <div class="env-item"><span class="env-key">JWT_SECRET</span><span class="env-val">64-char random string</span><span class="env-tag et-secret">secret</span></div>
+    <div class="env-item"><span class="env-key">NODE_ENV</span><span class="env-val">production</span><span class="env-tag et-set">set</span></div>
+    <div class="env-item"><span class="env-key">PORT</span><span class="env-val">Railway auto-assigns — use process.env.PORT</span><span class="env-tag et-auto">auto</span></div>
+    <div class="env-item"><span class="env-key">VITE_API_BASE_URL</span><span class="env-val">https://&lt;backend&gt;.railway.app</span><span class="env-tag et-set">set</span></div>
+  </div>
+
+  <h2 class="sub-title">T8.3 railway.toml</h2>
+  <div class="code-block">
+[build]
+  builder = <span class="str">'NIXPACKS'</span>
+
+[deploy]
+  startCommand = <span class="str">'node src/server.js'</span>
+  healthcheckPath = <span class="str">'/api/v1/health'</span>
+  healthcheckTimeout = 30
+  restartPolicyType = <span class="str">'ON_FAILURE'</span>
+  </div>
+</div>
+
+<!-- T9 -->
+<div class="section" id="t9">
+  <span class="section-tag tag-trd">TRD — Section T9</span>
+  <h1 class="sec-title">Testing Requirements</h1>
+
+  <div class="two-col">
+    <div>
+      <h2 class="sub-title">Backend — Jest + Supertest</h2>
+      <ul>
+        <li>Unit tests for all service functions</li>
+        <li>Integration tests for all API routes</li>
+        <li>RBAC tests: verify 403 for wrong role</li>
+        <li>Auth tests: 401 for missing/expired token</li>
+        <li>Target: &gt; 80% code coverage</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="sub-title">Frontend — React Testing Library</h2>
+      <ul>
+        <li>Component tests for all form components</li>
+        <li>Route guard tests: protected pages redirect</li>
+        <li>MSW (Mock Service Worker) for API mocking</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- T10 -->
+<div class="section" id="t10">
+  <span class="section-tag tag-trd">TRD — Section T10</span>
+  <h1 class="sec-title">README Requirements</h1>
+  <div class="info-box ib-purple">
+    <div class="ib-head">📄 README Must Include</div>
+    <div class="ib-body">
+      <b>1.</b> Project Description — what the app does<br>
+      <b>2.</b> Live URL (Railway deployment link)<br>
+      <b>3.</b> GitHub Repository URL<br>
+      <b>4.</b> Tech Stack summary<br>
+      <b>5.</b> Local Setup Instructions (clone → install → .env → migrate → dev)<br>
+      <b>6.</b> API Documentation summary with base URL<br>
+      <b>7.</b> Test credentials — demo Admin &amp; Member accounts<br>
+      <b>8.</b> Known Limitations / Future Roadmap
+    </div>
+  </div>
+</div>
+
+<!-- T11 -->
+<div class="section" id="t11">
+  <span class="section-tag tag-trd">TRD — Section T11</span>
+  <h1 class="sec-title">Final Tech Stack</h1>
+
+  <div class="stack-row"><span class="stack-icon">⚙️</span><span class="stack-name">Node.js 20 LTS</span><span class="stack-ver">Runtime</span><span class="stack-why">Railway native, LTS stability</span></div>
+  <div class="stack-row"><span class="stack-icon">🚂</span><span class="stack-name">Express 5</span><span class="stack-ver">Framework</span><span class="stack-why">Minimal, flexible, widely supported</span></div>
+  <div class="stack-row"><span class="stack-icon">🔷</span><span class="stack-name">Prisma ORM 5</span><span class="stack-ver">ORM</span><span class="stack-why">Type safety, easy migrations, PostgreSQL support</span></div>
+  <div class="stack-row"><span class="stack-icon">🐘</span><span class="stack-name">PostgreSQL 16</span><span class="stack-ver">Database</span><span class="stack-why">Railway plugin, relational, ACID compliance</span></div>
+  <div class="stack-row"><span class="stack-icon">🔐</span><span class="stack-name">JWT + bcrypt</span><span class="stack-ver">Auth</span><span class="stack-why">Stateless JWT, industry-standard hashing</span></div>
+  <div class="stack-row"><span class="stack-icon">✅</span><span class="stack-name">Zod</span><span class="stack-ver">Validation</span><span class="stack-why">Schema validation, great DX</span></div>
+  <div class="stack-row"><span class="stack-icon">⚛️</span><span class="stack-name">React 18 + Vite</span><span class="stack-ver">Frontend</span><span class="stack-why">Fast HMR, small bundle</span></div>
+  <div class="stack-row"><span class="stack-icon">🎨</span><span class="stack-name">TailwindCSS 3</span><span class="stack-ver">Styling</span><span class="stack-why">Utility-first, rapid UI</span></div>
+  <div class="stack-row"><span class="stack-icon">📡</span><span class="stack-name">Axios 1</span><span class="stack-ver">HTTP Client</span><span class="stack-why">Interceptors, easy JWT injection</span></div>
+  <div class="stack-row"><span class="stack-icon">🔄</span><span class="stack-name">TanStack Query 5</span><span class="stack-ver">Server State</span><span class="stack-why">Caching, background sync, devtools</span></div>
+  <div class="stack-row"><span class="stack-icon">🧪</span><span class="stack-name">Jest + Supertest + RTL</span><span class="stack-ver">Testing</span><span class="stack-why">Full-stack test coverage</span></div>
+  <div class="stack-row"><span class="stack-icon">🚀</span><span class="stack-name">Railway</span><span class="stack-ver">Deployment</span><span class="stack-why">Mandatory per assignment</span></div>
+
+  <div class="info-box ib-orange" style="margin-top:24px">
+    <div class="ib-head">⚡ Implementation Order (Build in this sequence)</div>
+    <div class="ib-body">
+      <b>1.</b> prisma/schema.prisma → run migrate<br>
+      <b>2.</b> middleware/auth.js + middleware/rbac.js<br>
+      <b>3.</b> Auth routes + service (signup, login, /me)<br>
+      <b>4.</b> Project routes (with loadProjectMember.js)<br>
+      <b>5.</b> Task routes (CRUD + PATCH /status)<br>
+      <b>6.</b> Dashboard aggregation endpoint<br>
+      <b>7.</b> Frontend AuthContext + axios.js interceptor<br>
+      <b>8.</b> Pages + ProtectedRoute / AdminRoute<br>
+      <b>9.</b> seed.js — add demo Admin + Member accounts<br>
+      <b>10.</b> railway.toml + deploy
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+// highlight active TOC link
+const links = document.querySelectorAll('.toc a[href^="#"]');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector('.toc a[href="#' + e.target.id + '"]');
+      if (a) a.style.color = 'var(--accent)';
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.section[id]').forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
