@@ -5,8 +5,8 @@ const authService = require('../services/auth.service');
  * POST /api/v1/auth/signup
  */
 const signup = catchAsync(async (req, res) => {
-  const { name, email, password } = req.body;
-  const result = await authService.signup({ name, email, password });
+  const { name, email, password, role } = req.body;
+  const result = await authService.signup({ name, email, password, role });
 
   res.status(201).json({
     data: result,

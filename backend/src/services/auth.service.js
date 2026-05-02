@@ -9,7 +9,7 @@ const SALT_ROUNDS = 10;
  * Register a new user.
  * Hashes password, creates user record, and returns user data with JWT.
  */
-const signup = async ({ name, email, password }) => {
+const signup = async ({ name, email, password, role }) => {
   // Check if email already exists
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -25,7 +25,7 @@ const signup = async ({ name, email, password }) => {
       name,
       email,
       passwordHash,
-      role: 'member', // Default role
+      role: role || 'member', // Use provided role or default to member
     },
     select: {
       id: true,
