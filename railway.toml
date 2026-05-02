@@ -2,7 +2,8 @@
   builder = 'NIXPACKS'
 
 [deploy]
-  startCommand = 'node src/server.js'
+  startCommand = 'npm start'
   healthcheckPath = '/api/v1/health'
-  healthcheckTimeout = 30
+  healthcheckTimeout = 120
+  restartPolicyType = 'ON_FAILURE'
   restartPolicyType = 'ON_FAILURE'

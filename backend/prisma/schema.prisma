@@ -6,16 +6,33 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  member
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
 }
 
 model User {
   id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
+  name          String   @db.VarChar(100)
+  email         String   @unique @db.VarChar(255)
   passwordHash  String   @map("password_hash")
-  role          String   @default("member")
+  role          Role     @default(member)
   createdAt     DateTime @default(now()) @map("created_at")
 
   ownedProjects    Project[]        @relation("ProjectOwner")
@@ -29,8 +46,8 @@ model User {
 
 model Project {
   id          String   @id @default(uuid())
-  name        String
-  description String?
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
   ownerId     String   @map("owner_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -46,7 +63,7 @@ model ProjectMember {
   id        String   @id @default(uuid())
   projectId String   @map("project_id")
   userId    String   @map("user_id")
-  role      String   @default("member")
+  role      Role     @default(member)
   joinedAt  DateTime @default(now()) @map("joined_at")
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -57,20 +74,20 @@ model ProjectMember {
 }
 
 model Task {
-  id          String    @id @default(uuid())
-  projectId   String    @map("project_id")
-  title       String
-  description String?
-  status      String    @default("todo")
-  priority    String    @default("medium")
-  dueDate     DateTime? @map("due_date")
-  assigneeId  String?   @map("assignee_id")
-  createdBy   String    @map("created_by")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id          String       @id @default(uuid())
+  projectId   String       @map("project_id")
+  title       String       @db.VarChar(200)
+  description String?      @db.Text
+  status      TaskStatus   @default(todo)
+  priority    TaskPriority @default(medium)
+  dueDate     DateTime?    @map("due_date") @db.Date
+  assigneeId  String?      @map("assignee_id")
+  createdBy   String       @map("created_by")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
 
   project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignee User?     @relation("TaskAssignee", fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   creator  User      @relation("TaskCreator", fields: [createdBy], references: [id])
   comments Comment[]
 
@@ -81,7 +98,7 @@ model Comment {
   id        String   @id @default(uuid())
   taskId    String   @map("task_id")
   userId    String   @map("user_id")
-  body      String
+  body      String   @db.Text
   createdAt DateTime @default(now()) @map("created_at")
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
