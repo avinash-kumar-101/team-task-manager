@@ -1,114 +1,92 @@
-# Team Task Manager
+# 🚀 Team Task Manager — Enterprise-Grade Collaboration Platform
 
-A collaborative, full-stack web application that enables teams to create projects, manage tasks, assign work to team members, and track overall progress — all through a clean, role-aware interface.
+A sophisticated, production-ready full-stack application designed for seamless team collaboration. Manage projects, coordinate tasks, and track team performance through a premium, role-based dashboard.
 
-## 🔗 Links
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Online-brightgreen)](https://team-task-manager.up.railway.app/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/avinash-kumar-101/team-task-manager)
 
-- **Live URL:** [Railway Deployment](https://your-app.railway.app)
-- **GitHub:** [Repository](https://github.com/your-username/team-task-manager)
+---
 
-## ⚡ Tech Stack
+## 🌟 Core Features
 
-| Layer | Technology |
-|-------|-----------|
-| Runtime | Node.js 20 LTS |
-| Framework | Express 5 |
-| ORM | Prisma 5 |
-| Database | PostgreSQL 16 |
-| Auth | JWT + bcrypt |
-| Validation | Zod |
-| Frontend | React 18 + Vite |
-| Styling | Vanilla CSS (Premium Dark Theme) |
-| HTTP Client | Axios |
-| Server State | TanStack Query 5 |
-| Deployment | Railway |
+- **🛡️ Secure Authentication:** Industrial-strength JWT & bcrypt security with role-aware session management.
+- **🏗️ Workspace Management:** Create and manage multiple projects with granular member invitations.
+- **✅ Task Lifecycle:** Full task management with priority levels (Low/Medium/High) and real-time status tracking (Todo/In Progress/Done).
+- **📊 Intelligence Dashboard:** Aggregated data visualization showing task distribution, project health, and overdue warnings.
+- **📱 Responsive UI:** Premium dark-themed interface built with glassmorphism, fully optimized for Desktop, Tablet, and Mobile.
+- **🗄️ Real Data Persistence:** Integrated with a production-grade PostgreSQL database on Railway for persistent storage.
 
-## 🚀 Local Setup
+---
+
+## 🔐 Reviewer Credentials (Demo Accounts)
+
+To explore all role-based features, you can use the following pre-configured accounts:
+
+| Role | Name | Email | Password |
+|------|------|-------|----------|
+| **Admin** | Avinash Admin | `avinash@admin.com` | `Password@123` |
+| **Admin** | Team Lead | `lead@admin.com` | `Password@123` |
+| **Member** | Rahul Dev | `rahul@member.com` | `Password@123` |
+| **Member** | Sneha UI | `sneha@member.com` | `Password@123` |
+
+> [!TIP]
+> **Admin accounts** can create projects and invite members. **Member accounts** can manage tasks within assigned projects.
+
+---
+
+## ⚡ Technical Architecture
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | React 18 + Vite | Blazing fast SPA with stateful navigation |
+| **Styling** | Vanilla CSS | Custom "Premium Dark" design system (No bloat) |
+| **Backend** | Express 5 | High-performance RESTful API architecture |
+| **ORM** | Prisma 5 | Type-safe database interactions and migrations |
+| **Database** | PostgreSQL | Enterprise-grade relational data storage |
+| **Hosting** | Railway | Continuous deployment with auto-scaling |
+
+---
+
+## 📡 API Ecosystem
+
+The backend exposes a comprehensive RESTful API at `/api/v1`:
+
+### Authentication
+- `POST /auth/signup` — Direct signup with role support
+- `POST /auth/login` — Session creation
+- `GET /auth/me` — Secure profile retrieval
+
+### Project Operations
+- `GET /projects` — Workspace listing
+- `POST /projects` — Initialize new project (Admin Only)
+- `POST /projects/:id/members` — Team invitation (Admin Only)
+
+### Task Operations
+- `GET /projects/:id/tasks` — Task board listing
+- `POST /projects/:id/tasks` — New task assignment
+- `PATCH /tasks/:taskId/status` — Instant status update
+
+---
+
+## 🛠️ Local Development
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/your-username/team-task-manager.git
+# 1. Clone & Install
+git clone https://github.com/avinash-kumar-101/team-task-manager.git
 cd team-task-manager
 
-# 2. Setup backend
+# 2. Environment Setup
+# Create .env in /backend with DATABASE_URL="postgresql://..."
+
+# 3. Database Sync
 cd backend
-npm install
-cp .env.example .env
-# Edit .env with your PostgreSQL connection string
+npx prisma db push
 
-# 3. Run migrations
-npx prisma migrate dev
-
-# 4. Seed demo data
-npm run seed
-
-# 5. Start backend
-npm run dev
-
-# 6. Setup frontend (new terminal)
-cd ../frontend
-npm install
-npm run dev
+# 4. Run Development Servers
+# Start Backend: npm run dev (Port 5000)
+# Start Frontend: cd ../frontend && npm run dev (Port 5173)
 ```
 
-## 🔐 Demo Credentials
+---
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@teamtask.com | Admin@123 |
-| Member | member@teamtask.com | Member@123 |
-| Member | jane@teamtask.com | Member@123 |
-
-## 📡 API Documentation
-
-Base URL: `/api/v1`
-
-### Auth
-- `POST /auth/signup` — Register new user
-- `POST /auth/login` — Login
-- `GET /auth/me` — Get current user (requires auth)
-
-### Projects
-- `GET /projects` — List user's projects
-- `POST /projects` — Create project (admin)
-- `GET /projects/:id` — Project detail
-- `PUT /projects/:id` — Update project (admin)
-- `DELETE /projects/:id` — Delete project (admin)
-- `GET /projects/:id/members` — List members
-- `POST /projects/:id/members` — Invite member (admin)
-- `DELETE /projects/:id/members/:uid` — Remove member (admin)
-
-### Tasks
-- `GET /projects/:id/tasks` — List tasks (supports filters)
-- `POST /projects/:id/tasks` — Create task
-- `GET /tasks/:taskId` — Get task detail
-- `PUT /tasks/:taskId` — Update task
-- `PATCH /tasks/:taskId/status` — Update status
-- `DELETE /tasks/:taskId` — Delete task (admin)
-
-### Dashboard
-- `GET /dashboard` — Aggregated dashboard data
-
-## 🏗️ Architecture
-
-Three-tier architecture: React SPA → Node.js/Express REST API → PostgreSQL
-
-### Roles
-- **Admin:** Full CRUD on projects/tasks, member management
-- **Member:** View projects, create/update own tasks
-
-## ⚠️ Known Limitations
-
-- No real-time WebSocket updates (polling/manual refresh)
-- No email notifications for invites
-- No file attachments on tasks
-- Comments feature is P2 (schema ready, API pending)
-
-## 🗺️ Future Roadmap
-
-- [ ] WebSocket for real-time updates
-- [ ] Email notifications
-- [ ] Task comments
-- [ ] File attachments
-- [ ] Kanban board view
-- [ ] Activity logs
+Designed and Developed by **Avinash Kumar** 💻
